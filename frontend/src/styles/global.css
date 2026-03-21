@@ -1,0 +1,66 @@
+/* Global styles — design system tokens */
+:root {
+  --color-bg: #f9f9ff;
+  --color-surface: #ffffff;
+  --color-primary-1: #bfd6f6;
+  --color-primary-2: #8dbdff;
+  --color-primary-3: #64a1f4;
+  --color-primary-4: #4a91f2;
+  --color-primary-5: #3b7dd8;
+  --color-cta: #134e8e;
+  --color-error: #c00707;
+  --color-warning: #ff4400;
+  --color-caution: #ffb33f;
+  --navbar-height: 60px;
+  --footer-height: 60px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  color: #1a1a2e;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary-5);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Page wrapper — fills space between navbar and footer */
+.page-wrapper {
+  min-height: calc(100vh - var(--navbar-height) - var(--footer-height));
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .page-wrapper {
+    padding: 1.25rem 1rem;
+  }
+}

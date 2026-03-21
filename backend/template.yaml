@@ -1,0 +1,191 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Kaguide AI — stateless AWS architecture advisor (Free Tier)
+
+Globals:
+  Function:
+    Runtime: python3.12
+    MemorySize: 512
+    Timeout: 30
+    Environment:
+      Variables:
+        LOG_LEVEL: WARNING
+
+Resources:
+
+  # ── IAM Role ──────────────────────────────────────────────────────────────
+  KaguideExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub kaguide-lambda-role-${AWS::StackName}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: KaguideMinimumPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # CloudWatch Logs (Lambda execution logs — no user data logged)
+              - Sid: CloudWatchLogs
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*
+
+              # Amazon Bedrock — Nova Lite model only
+              - Sid: BedrockInvoke
+                Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource: !Sub arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.nova-lite-v1:0
+
+              # AWS Price List API (global endpoint, no resource ARN)
+              - Sid: PricingGetProducts
+                Effect: Allow
+                Action:
+                  - pricing:GetProducts
+                Resource: '*'
+
+              # Amazon Q Business
+              - Sid: AmazonQSendMessage
+                Effect: Allow
+                Action:
+                  - q:SendMessage
+                Resource: '*'
+
+  # ── Lambda Function ────────────────────────────────────────────────────────
+  KaguideFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub kaguide-ai-${AWS::StackName}
+      CodeUri: .
+      Handler: lambda_handler.handler
+      Role: !GetAtt KaguideExecutionRole.Arn
+      Events:
+        AnalyzePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref KaguideApi
+            Path: /analyze
+            Method: POST
+
+  # ── API Gateway REST API ───────────────────────────────────────────────────
+  KaguideApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub kaguide-api-${AWS::StackName}
+      StageName: prod
+      # Disable ALL logging to avoid capturing request/response bodies (Req 7.3)
+      AccessLogSetting: !Ref AWS::NoValue
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          LoggingLevel: 'OFF'
+          DataTraceEnabled: false
+          MetricsEnabled: false
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type'"
+        AllowMethods: "'POST,OPTIONS'"
+      DefinitionBody:
+        openapi: '3.0.1'
+        info:
+          title: Kaguide AI API
+          version: '1.0'
+        paths:
+          /analyze:
+            post:
+              summary: Analyze an application description and return architecture recommendations
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - description
+                      properties:
+                        description:
+                          type: string
+                          minLength: 10
+                          maxLength: 2000
+              responses:
+                '200':
+                  description: Successful analysis
+                  headers:
+                    Access-Control-Allow-Origin:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Headers:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Methods:
+                      schema:
+                        type: string
+                '400':
+                  description: Validation error
+                '502':
+                  description: Bedrock error
+                '504':
+                  description: Timeout
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                httpMethod: POST
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${KaguideFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+            options:
+              summary: CORS preflight
+              responses:
+                '200':
+                  description: CORS preflight response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Headers:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Methods:
+                      schema:
+                        type: string
+              x-amazon-apigateway-integration:
+                type: mock
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+                responses:
+                  default:
+                    statusCode: '200'
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+                      method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+                    responseTemplates:
+                      application/json: '{}'
+
+  # Allow API Gateway to invoke the Lambda function
+  KaguideApiInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt KaguideFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${KaguideApi}/*/POST/analyze
+
+# ── Outputs ─────────────────────────────────────────────────────────────────
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL — set as VITE_API_URL before building the frontend
+    Value: !Sub https://${KaguideApi}.execute-api.${AWS::Region}.amazonaws.com/prod/analyze
+    Export:
+      Name: !Sub ${AWS::StackName}-ApiUrl
+
+  LambdaFunctionArn:
+    Description: ARN of the Kaguide Lambda function
+    Value: !GetAtt KaguideFunction.Arn

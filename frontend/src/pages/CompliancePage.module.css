@@ -1,0 +1,249 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+  overflow: hidden;
+}
+
+.bgSvg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--color-primary-5);
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+}
+
+.backLink:hover {
+  color: var(--color-cta);
+  text-decoration: underline;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0 0 0.4rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--color-primary-1);
+}
+
+/* Regulation badges */
+.regulationList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.regulationBadge {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--color-primary-1);
+  color: var(--color-cta);
+  letter-spacing: 0.02em;
+}
+
+/* Compliance flags */
+.flagList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flagCard {
+  background: var(--color-surface);
+  border-radius: 10px;
+  border: 1.5px solid var(--color-primary-1);
+  padding: 1rem 1.1rem;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.flagIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.35rem;
+}
+
+.flagIndicatorViolation {
+  background: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(192, 7, 7, 0.15);
+}
+
+.flagIndicatorWarning {
+  background: var(--color-warning);
+  box-shadow: 0 0 0 3px rgba(255, 68, 0, 0.15);
+}
+
+.flagIndicatorInfo {
+  background: var(--color-primary-4);
+  box-shadow: 0 0 0 3px rgba(74, 145, 242, 0.15);
+}
+
+.flagBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.flagHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.flagRegulation {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: var(--color-primary-1);
+  color: var(--color-cta);
+}
+
+.flagSeverityViolation {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-error);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flagSeverityWarning {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-warning);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flagSeverityInfo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary-5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flagDescription {
+  font-size: 0.875rem;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.flagPlainLanguage {
+  font-size: 0.82rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Amber placeholder */
+.amberPlaceholder {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem;
+  background: #fff8e1;
+  border: 1.5px solid var(--color-caution);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #7a4a00;
+  font-weight: 500;
+}
+
+.amberIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Recommended region */
+.regionRecommendation {
+  background: var(--color-surface);
+  border-radius: 10px;
+  border: 1.5px solid var(--color-primary-2);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.regionRecommendationLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary-5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+
+.regionRecommendationValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  font-family: monospace;
+  margin-bottom: 0.4rem;
+}
+
+.regionJustification {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* No flags state */
+.noFlags {
+  font-size: 0.875rem;
+  color: #555;
+  padding: 0.75rem 0;
+}
