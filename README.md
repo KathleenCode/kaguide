@@ -1,4 +1,4 @@
-# KAGuide AI 🚀
+# KAGUIDE AI
 ### AWS Architecture Advisor: Describe. Architect. Cost. Comply.
 
 **KAGuide AI** is a high-performance, fully stateless web application designed to bridge the gap between plain-language intent and professional AWS architecture. Input a simple description of your app, and receive an optimized service map, real-time cost projections, compliance analysis, and deployment-ready IAM policies—instantly.
