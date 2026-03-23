@@ -116,4 +116,4 @@ cd backend && pytest
 ```
 
 ## 📄 License
-MIT © 2026 KAGuide AI
+MIT © 2026 KAGUIDE AI
